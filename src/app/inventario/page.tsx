@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import RutaProtegida from "../../components/RutaProtegida";
 import { Producto } from "../../types";
@@ -8,7 +8,13 @@ import { Producto } from "../../types";
 export default function ModuloInventario() {
   const router = useRouter();
 
-  const [productos, setProductos] = useState<Producto[]>([]);
+  const [productos, setProductos] = useState<Producto[]>(() => {
+    if (typeof window !== "undefined") {
+      const datosGuardados = localStorage.getItem("inventarioVeterinaria");
+      return datosGuardados ? JSON.parse(datosGuardados) : [];
+    }
+    return [];
+  });
   const [busqueda, setBusqueda] = useState("");
   const [formulario, setFormulario] = useState({
     nombre: "",
@@ -19,13 +25,6 @@ export default function ModuloInventario() {
     fechaVencimiento: "",
   });
   const [editandoId, setEditandoId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const datosGuardados = localStorage.getItem("inventarioVeterinaria");
-    if (datosGuardados) {
-      setProductos(JSON.parse(datosGuardados));
-    }
-  }, []);
 
   const guardarDatos = (nuevosProductos: Producto[]) => {
     setProductos(nuevosProductos);
@@ -102,6 +101,12 @@ export default function ModuloInventario() {
               <button type="submit" style={{ padding: "0.75rem", backgroundColor: editandoId ? "#eab308" : "#10b981", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
                 {editandoId ? "Guardar Cambios" : "Añadir a Inventario"}
               </button>
+
+              {editandoId && (
+                <button type="button" onClick={() => { setEditandoId(null); setFormulario({ nombre: "", categoria: "", codigo: "", stock: 0, precio: 0, fechaVencimiento: "" }); }} style={{ padding: "0.5rem", backgroundColor: "#ef4444", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+                  Cancelar Edición
+                </button>
+              )}
             </form>
           </div>
 

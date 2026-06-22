@@ -1,35 +1,26 @@
-// src/app/pacientes/[id]/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import RutaProtegida from "../../../components/RutaProtegida";
 import { Paciente } from "../../../types";
 
 export default function DetallePaciente() {
   const router = useRouter();
-  // 1. EL HOOK ESTRELLA: useParams captura la parte dinámica de la URL
   const params = useParams();
-  const idURL = params.id as string; // Extraemos el ID como texto
+  const idURL = params.id as string;
 
-  // Estado para guardar al paciente encontrado
-  const [paciente, setPaciente] = useState<Paciente | null>(null);
-  const [cargando, setCargando] = useState(true);
-
-  // 2. EFECTO: Buscar en localStorage al cargar la vista
-  useEffect(() => {
-    const datosGuardados = localStorage.getItem("pacientesVeterinaria");
-    if (datosGuardados) {
-      const listaPacientes: Paciente[] = JSON.parse(datosGuardados);
-      // Buscamos el paciente exacto que coincida con el ID de la URL
-      const pacienteEncontrado = listaPacientes.find((p) => p.id === idURL);
-      
-      if (pacienteEncontrado) {
-        setPaciente(pacienteEncontrado);
+  const [paciente] = useState<Paciente | null>(() => {
+    if (typeof window !== "undefined") {
+      const datosGuardados = localStorage.getItem("pacientesVeterinaria");
+      if (datosGuardados) {
+        const listaPacientes: Paciente[] = JSON.parse(datosGuardados);
+        return listaPacientes.find((p) => p.id === idURL) ?? null;
       }
     }
-    setCargando(false);
-  }, [idURL]);
+    return null;
+  });
+  const [cargando] = useState(false);
 
   return (
     <RutaProtegida>

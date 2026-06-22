@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import RutaProtegida from "../../components/RutaProtegida";
 import { Paciente } from "../../types";
@@ -7,27 +7,18 @@ import { Paciente } from "../../types";
 export default function ModuloPacientes() {
   const router = useRouter();
 
-  // ================= ESTADOS (useState) =================
-  // Lista total de pacientes guardados
-  const [pacientes, setPacientes] = useState<Paciente[]>([]);
-  // Texto para buscar pacientes por nombre
+  const [pacientes, setPacientes] = useState<Paciente[]>(() => {
+    if (typeof window !== "undefined") {
+      const datosGuardados = localStorage.getItem("pacientesVeterinaria");
+      return datosGuardados ? JSON.parse(datosGuardados) : [];
+    }
+    return [];
+  });
   const [busqueda, setBusqueda] = useState("");
-  
-  // Estado para el formulario (Los 6 campos requeridos)
   const [formulario, setFormulario] = useState({
     nombre: "", especie: "", raza: "", edad: "", rutDueno: "", notaMedica: ""
   });
-  // Si tiene un ID, significa que estamos EDITANDO. Si es null, estamos CREANDO.
   const [editandoId, setEditandoId] = useState<string | null>(null);
-
-  // ================= EFECTOS (useEffect) =================
-  // Carga inicial: Busca los datos en localStorage cuando la página se abre por primera vez
-  useEffect(() => {
-    const datosGuardados = localStorage.getItem("pacientesVeterinaria");
-    if (datosGuardados) {
-      setPacientes(JSON.parse(datosGuardados));
-    }
-  }, []);
 
   // ================= FUNCIONES CRUD =================
   // Función para guardar los cambios en el estado y en localStorage al mismo tiempo
@@ -86,9 +77,8 @@ export default function ModuloPacientes() {
     paciente.nombre.toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  // >>> ¡AQUÍ ESTÁ EL CAMBIO IMPORTANTE! <<<
-  // Quitamos la etiqueta <RutaProtegida> para que puedas testear libremente el CRUD.
   return (
+    <RutaProtegida>
     <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif", backgroundColor: "#f8fafc", minHeight: "100vh" }}>
       
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
@@ -174,5 +164,6 @@ export default function ModuloPacientes() {
 
       </div>
     </div>
+    </RutaProtegida>
   );
 }
