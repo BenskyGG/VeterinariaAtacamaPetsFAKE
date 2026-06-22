@@ -14,7 +14,24 @@ export default function Dashboard() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#f8fafc", fontFamily: "Arial, sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #0f766e, #0ea5e9)", fontFamily: "Arial, sans-serif" }}>
+      <style>{`
+        .card {
+          background: white;
+          padding: 2rem;
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+          cursor: pointer;
+          transition: transform 0.2s, border-color 0.2s;
+          border: 2px solid transparent;
+        }
+        .card:hover {
+          transform: translateY(-4px);
+        }
+        .card-pacientes:hover { border-color: #10b981; }
+        .card-inventario:hover { border-color: #eab308; }
+      `}</style>
+
       <header style={{
         backgroundColor: "#0f766e",
         color: "white",
@@ -26,7 +43,7 @@ export default function Dashboard() {
         <h1 style={{ fontSize: "1.5rem", margin: 0 }}>🐾 Atacama Pets</h1>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <span style={{ fontSize: "0.9rem" }}>
-            {user?.nombre} ({user?.rol})
+            {user?.nombre ?? "Usuario"} ({user?.rol ?? "sin rol"})
           </span>
           <button onClick={handleLogout} style={{
             padding: "0.4rem 1rem",
@@ -45,18 +62,7 @@ export default function Dashboard() {
         <h2 style={{ color: "#1e293b", marginBottom: "2rem" }}>Panel Principal</h2>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-          <div onClick={() => router.push("/pacientes")} style={{
-            backgroundColor: "white",
-            padding: "2rem",
-            borderRadius: "12px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-            cursor: "pointer",
-            transition: "transform 0.2s",
-            border: "2px solid transparent",
-          }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#10b981"; e.currentTarget.style.transform = "translateY(-4px)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "transparent"; e.currentTarget.style.transform = "translateY(0)"; }}
-          >
+          <div className="card card-pacientes" onClick={() => router.push("/pacientes")}>
             <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🐶</div>
             <h3 style={{ margin: "0 0 0.5rem", color: "#0f172a" }}>Gestión de Pacientes</h3>
             <p style={{ margin: 0, color: "#64748b", fontSize: "0.9rem" }}>
@@ -64,18 +70,7 @@ export default function Dashboard() {
             </p>
           </div>
 
-          <div onClick={() => router.push("/inventario")} style={{
-            backgroundColor: "white",
-            padding: "2rem",
-            borderRadius: "12px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-            cursor: "pointer",
-            transition: "transform 0.2s",
-            border: "2px solid transparent",
-          }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#eab308"; e.currentTarget.style.transform = "translateY(-4px)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "transparent"; e.currentTarget.style.transform = "translateY(0)"; }}
-          >
+          <div className="card card-inventario" onClick={() => router.push("/inventario")}>
             <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>📦</div>
             <h3 style={{ margin: "0 0 0.5rem", color: "#0f172a" }}>Control de Inventario</h3>
             <p style={{ margin: 0, color: "#64748b", fontSize: "0.9rem" }}>

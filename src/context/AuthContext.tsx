@@ -1,7 +1,6 @@
-// src/context/AuthContext.tsx
-"use client"; // CRÍTICO: Le dice a Next.js que este código se ejecuta en el navegador (para poder usar localStorage)
+"use client";
 
-import { createContext, useState, ReactNode } from "react";
+import { createContext, useState, useEffect, ReactNode } from "react";
 import { Usuario } from "../types";
 
 interface AuthContextType {
@@ -17,24 +16,24 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<Usuario | null>(() => {
-    if (typeof window !== "undefined") {
-      const usuarioGuardado = localStorage.getItem("usuarioLogueado");
-      return usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
-    }
-    return null;
-  });
+  const [user, setUser] = useState<Usuario | null>(null);
 
-  // Función para iniciar sesión
+  useEffect(() => {
+    const usuarioGuardado = localStorage.getItem("usuarioLogueado");
+    if (usuarioGuardado) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setUser(JSON.parse(usuarioGuardado));
+    }
+  }, []);
+
   const login = (usuario: Usuario) => {
     setUser(usuario);
-    localStorage.setItem("usuarioLogueado", JSON.stringify(usuario)); // Guarda en la memoria del navegador
+    localStorage.setItem("usuarioLogueado", JSON.stringify(usuario));
   };
 
-  // Función para cerrar sesión
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("usuarioLogueado"); // Borra la memoria
+    localStorage.removeItem("usuarioLogueado");
   };
 
   return (

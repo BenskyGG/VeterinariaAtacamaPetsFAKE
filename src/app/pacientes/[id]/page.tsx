@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import RutaProtegida from "../../../components/RutaProtegida";
 import { Paciente } from "../../../types";
@@ -10,21 +10,25 @@ export default function DetallePaciente() {
   const params = useParams();
   const idURL = params.id as string;
 
-  const [paciente] = useState<Paciente | null>(() => {
-    if (typeof window !== "undefined") {
-      const datosGuardados = localStorage.getItem("pacientesVeterinaria");
-      if (datosGuardados) {
-        const listaPacientes: Paciente[] = JSON.parse(datosGuardados);
-        return listaPacientes.find((p) => p.id === idURL) ?? null;
+  const [paciente, setPaciente] = useState<Paciente | null>(null);
+  const [cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+    const datosGuardados = localStorage.getItem("pacientesVeterinaria");
+    if (datosGuardados) {
+      const listaPacientes: Paciente[] = JSON.parse(datosGuardados);
+      const pacienteEncontrado = listaPacientes.find((p) => p.id === idURL);
+      if (pacienteEncontrado) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setPaciente(pacienteEncontrado);
       }
     }
-    return null;
-  });
-  const [cargando] = useState(false);
+    setCargando(false);
+  }, [idURL]);
 
   return (
     <RutaProtegida>
-      <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif", backgroundColor: "#f8fafc", minHeight: "100vh" }}>
+      <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif", background: "linear-gradient(135deg, #0f766e, #0ea5e9)", minHeight: "100vh" }}>
         
         <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", maxWidth: "800px", margin: "0 auto 2rem" }}>
           <h1 style={{ fontSize: "1.8rem", color: "#1e293b" }}>Ficha Médica</h1>

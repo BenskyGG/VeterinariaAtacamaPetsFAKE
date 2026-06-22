@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import RutaProtegida from "../../components/RutaProtegida";
 import { Producto } from "../../types";
@@ -8,13 +8,15 @@ import { Producto } from "../../types";
 export default function ModuloInventario() {
   const router = useRouter();
 
-  const [productos, setProductos] = useState<Producto[]>(() => {
-    if (typeof window !== "undefined") {
-      const datosGuardados = localStorage.getItem("inventarioVeterinaria");
-      return datosGuardados ? JSON.parse(datosGuardados) : [];
+  const [productos, setProductos] = useState<Producto[]>([]);
+
+  useEffect(() => {
+    const datosGuardados = localStorage.getItem("inventarioVeterinaria");
+    if (datosGuardados) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setProductos(JSON.parse(datosGuardados));
     }
-    return [];
-  });
+  }, []);
   const [busqueda, setBusqueda] = useState("");
   const [formulario, setFormulario] = useState({
     nombre: "",
@@ -77,7 +79,7 @@ export default function ModuloInventario() {
 
   return (
     <RutaProtegida>
-      <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif", backgroundColor: "#f8fafc", minHeight: "100vh" }}>
+      <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif", background: "linear-gradient(135deg, #0f766e, #0ea5e9)", minHeight: "100vh" }}>
         <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
           <h1 style={{ fontSize: "1.8rem", color: "#1e293b" }}>📦 Control de Inventario</h1>
           <button onClick={() => router.push("/dashboard")} style={{ padding: "0.5rem 1rem", backgroundColor: "#64748b", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
